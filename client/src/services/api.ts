@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios'
 class HttpRequest {
   private static instance: AxiosInstance
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): AxiosInstance {
     if (!HttpRequest.instance) {

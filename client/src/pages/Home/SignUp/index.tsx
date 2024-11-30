@@ -106,6 +106,7 @@ export const SignUp: React.FC = () => {
                     onChange={onChange}
                     value={value}
                     icon={FiLock}
+                    type='password'
                     placeholder="Senha"
                     error={errors.password?.message}
                   />
