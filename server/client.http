@@ -1,0 +1,49 @@
+## users
+
+### create user
+POST http://localhost:3333/api/users/
+content-type: application/json
+
+{
+	"name":"user2",
+	"email":"user2@email.com",
+	"password":"teste123@"
+}
+
+### avatar
+POST http://localhost:3333/api/users/avatar
+content-type: application/json
+
+### delete
+DELETE http://localhost:3333/api/users/A1313897-E427-45AE-BA67-0C6B60464982
+
+## auth
+###
+POST http://localhost:3333/api/sessions
+content-type: application/json
+
+{
+	"email":"user1@email.com",
+	"password":"teste123"
+}
+
+## appointment
+### create
+POST http://localhost:3333/api/appointments/
+content-type: application/json
+Authorization: jwt eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQ2NzY3OTQsImV4cCI6MTcwNDc2MzE5NCwic3ViIjoiNUY3QUM5ODAtNEMyMi00QzU2LUIwNTUtOTY3N0NDQkU5ODdDIn0.izQ1Q3H2pt3YiRnKbW20mMZNLWDGpCLUOlEJf8nr_3k
+
+{
+	"provider_id":"5C4E4C7A-5A2F-4990-8724-C8EB24BC37D1",
+	"date":"2024-04-21 13:00:00"
+}
+
+###
+
+PATCH http://localhost:3333/api/users/avatar
+content-type: application/json
+Authorization: jwt eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDQyODQsImV4cCI6MTcwNjkzMDY4NCwic3ViIjoiRTkzRjJBQ0ItOUI2OC00RTBFLTkwQjEtRDkwNTRBNTA1NUU0In0.mcw_m8TuCzQlCQUT-OwZGpNVatuHeMft_ivYtMoYbc8
+
+{
+	"avatarFilename":"avatarFilename"
+}
