@@ -13,7 +13,7 @@ Construído como projeto principal do Bootcamp GoStack 12 o GoBarber é uma apli
 ### :gear: Desenvolvimento
 
 O Back-end construído em Node.js com express utilizando os bancos de dados Postgres para os dados dos clientes e barbeiros, MongoDB para armazenar as notificações de agendamentos e o Redis para armazenar o cache, para cada banco foi criado um container no Docker. O Front-end Web foi feito utilizando React.JS e o Mobile feito com React-Native.
-O Front-end feito com React.JS e o Mobile utilizando React-Native.
+O Front-end feito com React.JS.
 
 ### :pencil2: Template Web Figma
 <a href="https://www.figma.com/file/BXCihtXXh9p37lGsENV614/GoBarber?node-id=34%3A1180" alt="GoBarber Figma">Template GoBarber </a>
