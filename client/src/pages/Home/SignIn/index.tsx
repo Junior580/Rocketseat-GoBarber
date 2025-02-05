@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi'
 import LogoImg from '../../../assets/logo.svg'
@@ -13,7 +13,6 @@ import { Button } from '../../../components/Button'
 import { Container, Content, AnimationContainer, Background } from './styles'
 
 import { Link, useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
 import { useToast } from '../../../hooks/toast'
 import { useAuth } from '../../../hooks/auth'
 
@@ -28,6 +27,7 @@ export const SignIn: React.FC = () => {
   const { signIn } = useAuth()
   const { addToast } = useToast()
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
@@ -38,22 +38,26 @@ export const SignIn: React.FC = () => {
     defaultValues: { email: '', password: '' },
   })
 
-  const { mutateAsync, isLoading } = useMutation({
-    mutationFn: signIn,
-    onSuccess: () => {
-      return navigate('/dashboard')
-    },
-    onError: () =>
-      addToast({
-        type: 'error',
-        title: 'Erro na autenticação',
-        description: 'Ocorreu erro ao fazer login, cheque credenciais',
-      }),
-  })
-
   const onSubmit: SubmitHandler<SignInSchemaType> = useCallback(
-    async data => mutateAsync(data),
-    [mutateAsync],
+    async data => {
+      setIsLoading(true);
+      try {
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+        navigate('/dashboard')
+      } catch (error) {
+        addToast({
+          type: 'error',
+          title: 'Erro na autenticação',
+          description: 'Ocorreu erro ao fazer login, cheque credenciais',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
   )
 
   return (

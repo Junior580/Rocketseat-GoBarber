@@ -1,5 +1,5 @@
-import React, { useCallback, useRef } from 'react'
-import { FiLogIn, FiMail, FiLock } from 'react-icons/fi'
+import React, { useCallback, useState } from 'react'
+import { FiLogIn, FiLock } from 'react-icons/fi'
 import LogoImg from '../../../assets/logo.svg'
 
 import { Input } from '../../../components/Input'
@@ -13,7 +13,6 @@ import { Container, Content, AnimationContainer, Background } from './styles'
 
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../../../services/api'
-import { useMutation } from '@tanstack/react-query'
 import { useToast } from '../../../hooks/toast'
 
 const ResetPassSchema = z
@@ -32,6 +31,7 @@ export const ResetPassword: React.FC = () => {
   const { addToast } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const {
     control,
@@ -42,33 +42,33 @@ export const ResetPassword: React.FC = () => {
     defaultValues: { password: '', password_confirmation: '' },
   })
 
-  const resetPass = useCallback(async (data: ResetPassSchemaType) => {
-    const { password, password_confirmation } = data
-    const token = location.search.replace('?token=', '')
-    if (!token) {
-      throw new Error()
-    }
-    const response = await api.post('/password/reset', {
-      password,
-      password_confirmation,
-      token,
-    })
-    return response
-  }, [])
-
-  const { mutate } = useMutation(resetPass, {
-    onSuccess: () => navigate('/'),
-    onError: () =>
-      addToast({
-        type: 'error',
-        title: 'Erro ao resetar senha',
-        description:
-          'Ocorreu um erro ao resetar sua senha, verifique suas credenciais',
-      }),
-  })
-
   const onSubmit: SubmitHandler<ResetPassSchemaType> = useCallback(
-    async data => mutate(data),
+    async data => {
+      try {
+        setIsLoading(true)
+        const token = location.search.replace('?token=', '');
+
+        if (!token) {
+          throw new Error();
+        }
+
+        await api.post('/password/reset', {
+          password: data.password,
+          password_confirmation: data.password_confirmation,
+          token,
+        });
+        navigate('/')
+      } catch (error) {
+        addToast({
+          type: 'error',
+          title: 'Erro ao resetar senha',
+          description:
+            'Ocorreu um erro ao resetar sua senha, verifique suas credenciais',
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
     [],
   )
 
@@ -112,7 +112,7 @@ export const ResetPassword: React.FC = () => {
                 )}
               />
 
-              <Button type="submit">Alterar senha</Button>
+              <Button type="submit" loading={isLoading}>Alterar senha</Button>
             </form>
 
             <Link to="/">

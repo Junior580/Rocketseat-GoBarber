@@ -1,9 +1,7 @@
-import { useCallback } from 'react'
-import axios from 'axios'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
-import { useMutation } from '@tanstack/react-query'
 import LogoImg from '../../../assets/logo.svg'
 import { FiArrowLeft, FiMail, FiUser, FiLock } from 'react-icons/fi'
 import { Input } from '../../../components/Input'
@@ -24,6 +22,7 @@ type SignUpSchemaType = z.infer<typeof SignUpSchema>
 export const SignUp: React.FC = () => {
   const { addToast } = useToast()
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const {
     control,
@@ -33,29 +32,28 @@ export const SignUp: React.FC = () => {
     resolver: zodResolver(SignUpSchema),
   })
 
-  const { mutate } = useMutation(async ({ name, email, password }: SignUpSchemaType) => {
-    return api.post('/users', { name, email, password })
-  }
-    , {
-      onSuccess: () => {
+
+  const onSubmit: SubmitHandler<SignUpSchemaType> = useCallback(
+    async data => {
+      try {
+        setIsLoading(true)
+        await api.post('/users', data);
         addToast({
           type: 'success',
           title: 'Cadastro Realizado',
           description: 'Voce já pode fazer seu logon',
         })
-        return navigate('/')
-      },
-      onError: e =>
-
+        navigate('/')
+      } catch (error) {
         addToast({
           type: 'error',
           title: 'Erro no cadastro.',
-          description: `Ocorreu um erro no cadastro: ${e}`,
-        }),
-    })
-
-  const onSubmit: SubmitHandler<SignUpSchemaType> = useCallback(
-    async data => mutate(data),
+          description: `Ocorreu um erro no cadastro: ${error}`,
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
     [],
   )
 
@@ -113,7 +111,7 @@ export const SignUp: React.FC = () => {
                 )}
               />
 
-              <Button type="submit">Cadastrar</Button>
+              <Button type="submit" loading={isLoading}>Cadastrar</Button>
             </form>
 
             <Link to="/">

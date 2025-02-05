@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react'
+import React, { useCallback, ChangeEvent, useState } from 'react'
 
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -14,7 +14,6 @@ import { useToast } from '../../../hooks/toast'
 import { useAuth } from '../../../hooks/auth'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import userDefault from '../../../assets/icon-user.png'
 
@@ -40,10 +39,9 @@ type UpdateProfileType = z.infer<typeof UpdateProfileSchema>
 
 const Profile: React.FC = () => {
   const { addToast } = useToast()
-
   const { user, updateUser } = useAuth()
-
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const {
     control,
@@ -57,42 +55,42 @@ const Profile: React.FC = () => {
     },
   })
 
-  const { mutateAsync, isLoading } = useMutation({
-    mutationFn: async ({
+  const onSubmit: SubmitHandler<UpdateProfileType> = useCallback(
+    async ({
       name,
       email,
       password,
       old_password,
       password_confirmation,
-    }: UpdateProfileType) => {
-      return api.put('/profile', {
-        name,
-        email,
-        password,
-        old_password,
-        password_confirmation,
-      })
-    },
-    onSuccess: () => {
-      addToast({
-        type: 'success',
-        title: 'Perfil atualizado!',
-        description:
-          'Suas informações do perfil foram atualizadas com sucesso.',
-      })
-      return navigate('/')
-    },
-    onError: () =>
-      addToast({
-        type: 'error',
-        title: 'Erro ao atualizar',
-        description: 'Ocorreu um erro ao atualizar o perfil, tente novamente.',
-      }),
-  })
+    }) => {
+      try {
+        setIsLoading(true)
+        api.put('/profile', {
+          name,
+          email,
+          password,
+          old_password,
+          password_confirmation,
+        })
+        addToast({
+          type: 'success',
+          title: 'Perfil atualizado!',
+          description:
+            'Suas informações do perfil foram atualizadas com sucesso.',
+        })
+        navigate('/')
 
-  const onSubmit: SubmitHandler<UpdateProfileType> = useCallback(
-    async data => mutateAsync(data),
-    [mutateAsync],
+      } catch (error) {
+        addToast({
+          type: 'error',
+          title: 'Erro ao atualizar',
+          description: 'Ocorreu um erro ao atualizar o perfil, tente novamente.',
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [],
   )
 
   const handleAvatarChange = useCallback(

@@ -20,7 +20,9 @@ export const PrivateRoute: React.FC<RouteProps> = ({
   // private NO user NO = true == children || outlet
 
   return isPrivate === !!user ? (
-    children || <Outlet />
+    <>
+      {children} || <Outlet />
+    </>
   ) : (
     <Navigate to={user ? '/dashboard' : '/'} />
   )

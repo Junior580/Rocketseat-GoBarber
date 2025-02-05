@@ -7,7 +7,6 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { useMutation } from '@tanstack/react-query'
 
 import { Input } from '../../../components/Input'
 import { Button } from '../../../components/Button'
@@ -27,6 +26,7 @@ type ForgotPassSchemaType = z.infer<typeof ForgotPassSchema>
 export const ForgotPassword: React.FC = () => {
   const { addToast } = useToast()
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const {
     control,
@@ -37,31 +37,30 @@ export const ForgotPassword: React.FC = () => {
     defaultValues: { email: '' },
   })
 
-  const { mutate, isLoading } = useMutation(async (data: ForgotPassSchemaType) => {
-    return api.post('/password/forgot', {
-      email: data.email,
-    })
-  }
-    , {
-      onSuccess: () => {
+  const onSubmit: SubmitHandler<ForgotPassSchemaType> = useCallback(
+    async data => {
+      try {
+        setIsLoading(true)
+        api.post('/password/forgot', {
+          email: data.email,
+        })
         addToast({
           type: 'success',
           title: 'E-mail de recuperação enviado',
           description:
             'Enviamos um email para confirmar a recuperação de senha, cheque sua caixa de entrada',
         })
-        return navigate('/')
-      },
-      onError: () =>
+        navigate('/')
+      } catch (error) {
         addToast({
           type: 'error',
           title: 'Erro na recuperação de senha',
           description: 'Ocorreu um erro ao tentar recuperar a senha',
-        }),
-    })
-
-  const onSubmit: SubmitHandler<ForgotPassSchemaType> = useCallback(
-    async data => mutate(data),
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
     [],
   )
 
