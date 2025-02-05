@@ -43,7 +43,7 @@ services:
       - netapp
 
   postgres:
-    container_name: postgressql-db
+    container_name: gobarber-postgres
     image: postgres:16.3
     environment:
       POSTGRES_USER: postgres
@@ -56,7 +56,7 @@ services:
 
   mongodb:
     container_name: mongo-db
-    image: mongo:latest
+    image: mongo:8.0
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: docker
