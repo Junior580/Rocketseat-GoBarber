@@ -1,7 +1,7 @@
 services:
   nginx:
     image: nginx:1.27.0-alpine
-    container_name: nginx-app
+    container_name: gobarber-nginx-app
     ports:
       - '8080:80'
     volumes:
@@ -13,7 +13,7 @@ services:
       - app2
 
   app1:
-    container_name: app1
+    container_name: gobarber-app1
     build:
       context: .
     env_file:
@@ -28,7 +28,7 @@ services:
       - netapp
 
   app2:
-    container_name: app2
+    container_name: gobarber-app2
     build:
       context: .
     env_file:
@@ -55,18 +55,17 @@ services:
       - netapp
 
   mongodb:
-    container_name: mongo-db
+    container_name: gobarber-mongo
     image: mongo:8.0
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: docker
+      MONGO_INITDB_DATABASE: gobarber
     volumes:
       - mongo_data:/var/lib/mongodb/mongodata
     networks:
       - netapp
 
   redis:
-    container_name: redis-db
+    container_name: gobarber-redis
     image: redis:6.2
     command: ['redis-server', '--requirepass', 'docker']
     networks:
