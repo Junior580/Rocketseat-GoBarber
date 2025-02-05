@@ -3,11 +3,9 @@ import { Request, Response, NextFunction } from 'express'
 import { RateLimiterRedis } from 'rate-limiter-flexible'
 import Redis from 'ioredis'
 
-const redisClient = new Redis({
-  host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
-  password: process.env.REDIS_PASS || undefined,
-})
+const redisClient = new Redis(
+  `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+)
 
 const limiter = new RateLimiterRedis({
   storeClient: redisClient,
