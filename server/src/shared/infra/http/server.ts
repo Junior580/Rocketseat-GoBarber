@@ -16,14 +16,11 @@ import { rateLimiter } from './middlewares/rateLimiter'
 
 import '@shared/container'
 
-AppDataSource.initialize()
-  .then(() => {
-    AppDataSourceMongo.initialize()
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📦 Data Source has been initialized!')
-    }
-  })
-  .then(() => {
+async function bootstrap() {
+  try {
+    await AppDataSource.initialize()
+    await AppDataSourceMongo.initialize()
+
     const app = express()
 
     app.use(
@@ -49,9 +46,10 @@ AppDataSource.initialize()
         console.log(`🚀 server is running on ${port}!`)
       }
     })
-  })
-  .catch(err => {
-    if (process.env.NODE_ENV === 'development') {
-      return console.error('❌ Error during Data Source initialization', err)
-    }
-  })
+  } catch (err) {
+    console.error('❌ Error during startup:', err)
+    process.exit(1)
+  }
+}
+
+bootstrap()
